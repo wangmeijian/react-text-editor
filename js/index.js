@@ -44,10 +44,12 @@ class Editor extends React.Component{
 			'6': 'xx-large'
 		};
 		this.selection = {};
+
+		this.hasFocus = this.hasFocus.bind(this);
 	}
-	init(container){
-		this._cmd('styleWithCSS');
+	componentDidMount(){
 		// new Link(this);
+		this.content = document.querySelector('.d-e-container .d-e-content');
 	}
 	createRange(){
 		let { anchorNode, anchorOffset, focusNode, focusOffset } = this.selection;
@@ -55,10 +57,14 @@ class Editor extends React.Component{
 		let selection = document.getSelection();
 
 		if(!anchorNode)return;
-		range.setStart(anchorNode, anchorOffset);
-		range.setEnd(focusNode, focusOffset);
-		selection.removeAllRanges();
-		selection.addRange( range );
+		try{
+			range.setStart(anchorNode, anchorOffset);
+			range.setEnd(focusNode, focusOffset);
+			selection.removeAllRanges();
+			selection.addRange( range );
+		}catch(err){
+			// 不报错
+		}
 	}
 	_handleToolClick(id){
 		const { toolStatus } = this.state;
@@ -103,6 +109,9 @@ class Editor extends React.Component{
 			>{this.fontSize[size]}</li>;
 		})
 	}
+	hasFocus(){
+		return document.activeElement === this.content;
+	}
 
 	getSelection(){
 		const selection = document.getSelection();
@@ -131,9 +140,11 @@ class Editor extends React.Component{
 					this._cmd('italic');
 					break;
 				case 'font-colors':
+					this.createRange();
 					this._cmd('foreColor', false, params);
 					break;
 				case 'font-size':
+					this.createRange();
 					this._cmd('fontSize', false, params);
 					break;
 				case 'link':
@@ -185,7 +196,6 @@ class Editor extends React.Component{
 	}
 	_hasParent(node, nodeName){
 		let result = false;
-		let content = document.querySelector('.d-e-content');
 		
 		if(!node)return result;
 		do{
@@ -194,8 +204,45 @@ class Editor extends React.Component{
 				break;
 			}
 			node = node.parentNode;
-		}while(node.parentNode !== content);
+		}while(node.parentNode !== this.content);
 		return result;
+	}
+	getCurrentStyle(){
+		if(!this.hasFocus())return [];
+		const result = [];
+		const status = {
+			'font-weight': 'bold',
+			'text-decoration-line': 'underline',
+			'font-style': 'italic',
+			'color': 'font-colors',
+			'font-size': 'font-size',
+			'text-align': ''
+		}
+		const node = this.selection.anchorNode.parentNode;
+		const computed = (node, names) => {
+			if(node === this.content)return names;
+			const styles = node.getAttribute('style');
+
+			if(!styles)return names;
+			styles.split('; ').forEach(item => {
+				let styleName = item.split(': ')[0];
+				let styleValue = item.split(': ')[1];
+
+				if(styleName in status){
+					if(styleName === 'text-align'){
+						names.push({
+							'left': 'align-left',
+							'center': 'align-center',
+							'right': 'align-right'
+						}[styleValue]);
+					}else{
+						names.push(status[styleName]);						
+					}
+				}
+			})
+			return computed(node.parentNode, names);
+		}
+		return computed(node, result);
 	}
 	render(){
 		const { toolStatus } = this.state;
@@ -203,13 +250,6 @@ class Editor extends React.Component{
 		return (
 			<div className="d-e-container">
 				<div className="d-e-toolbar" >
-					{/*<div className="d-e-menu">
-						<button id="de-bold" className={classnames('d-e-button icon-bold', {
-							'd-e-button-active': toolStatus['bold']
-						})} onClick={() => {
-							this._handleToolClick('bold');
-						}}></button>
-					</div>*/}
 					<Menu type="bold" icon="icon-bold"  />
 					<div className="d-e-menu">
 						<button id="de-underline" className="d-e-button icon-underline" onClick={() => {
@@ -285,7 +325,13 @@ class Editor extends React.Component{
 					contentEditable="true" 
 					suppressContentEditableWarning="true"
 					onMouseUp={() => {
-						this.getSelection();
+						let styles = [];
+						this.getSelection();	
+						styles = this.getCurrentStyle();
+						styles.forEach(item => {
+							
+						})
+						console.log(  styles);
 					}}
 					onKeyUp={() => {
 						this.getSelection();

@@ -9,6 +9,7 @@ class Menu extends React.Component{
 		this.state = {
 			active: !!props.active
 		}
+		this.cmd('styleWithCSS');
 	}
 	static getDerivedStateFromProps(props, state){
 		return {
