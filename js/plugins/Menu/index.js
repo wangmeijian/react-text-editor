@@ -3,32 +3,18 @@ import classnames from 'classnames';
 /**
  * 有操作面板的菜单基础类
  */
-class Menu extends React.Component{
-	constructor(props){
+class Menu extends React.Component {
+	constructor(props) {
 		super(props);
-		this.state = {
-			active: !!props.active
-		}
 		this.cmd('styleWithCSS');
 	}
-	static getDerivedStateFromProps(props, state){
-		return {
-			...state,
-			active: props.active
-		}
-	}
-	handleToolClick(id){
-		const { active } = this.state;
+	handleSetContent(type, params) {
+		const { active, setMenuStatus } = this.props;
 
-		this.setState({
-			active: !active 
-		}, () => {
-			this.handleSetContent(id);
-		})	
-	}
-
-	handleSetContent(type, params){
-		switch(type){
+		setMenuStatus({
+			[type]: !active
+		})
+		switch (type) {
 			case 'bold':
 				this.cmd('bold');
 				break;
@@ -48,7 +34,7 @@ class Menu extends React.Component{
 				this.cmd('createLink', false, params);
 				break;
 			case 'indent':
-				this.state.active ? this.cmd('indent') : this.cmd('outdent');
+				active ? this.cmd('indent') : this.cmd('outdent');
 				break;
 			case 'align-left':
 				this.cmd('justifyLeft');
@@ -65,43 +51,30 @@ class Menu extends React.Component{
 			case 'redo':
 				this.cmd('redo');
 				break;
-			case 'fullscreen':
-				this.state.active ? this.fullScreen() : this.exitFullscreen();
-				break;
-		}		
+		}
 	}
-	cmd(...args){
+	cmd(...args) {
 		document.execCommand(...args);
 	}
-
-	fullScreen() {
-        if (document.body.requestFullScreen) {
-            document.body.requestFullScreen();
-        } else if (document.body.webkitRequestFullScreen) {
-            document.body.webkitRequestFullScreen();
-        }
-    }
-    exitFullscreen() {
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-        }
-    }
-	render(){
-		const { type, icon } = this.props;
-		const { active } = this.state;
+	render() {
+		const { type, icon, active } = this.props;
 
 		return (
-			<div className="d-e-menu">
-				<button className={classnames("d-e-button", {
-					[icon]: true,
-					'd-e-button-active': active
-				})} onClick={() => {
-					this.handleToolClick(type);
-				}}></button>
+			<div className='d-e-menu'>
+				<button
+					className={classnames('d-e-button', {
+						[icon]: true,
+						'd-e-button-active': active
+					})}
+					onClick={() => {
+						this.handleSetContent(type);
+					}}
+					onMouseDown={() => {
+						
+					}}
+				/>
 			</div>
-		)
+		);
 	}
 }
 

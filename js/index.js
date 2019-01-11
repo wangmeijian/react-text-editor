@@ -1,33 +1,30 @@
+import '@css/index.less';
 import React from 'react';
 // import Link from '@plugins/Link';
 import Menu from '@plugins/Menu';
 import classnames from 'classnames';
 
-/**
- * Editor 富文本编辑器
- */
-class Editor extends React.Component{
-	constructor(props){		
-        super(props);
+class Index extends React.Component {
+	constructor(props) {
+		super(props);
 		this.state = {
-			toolStatus: {
-				'bold': false,
-				'underline': false,
-				'italic': false,
+			menuStatus: {
+				bold: false,
+				underline: false,
+				italic: false,
 				'font-colors': false,
 				'font-size': false,
-				'link': false,
-				'indent': false,
+				link: false,
+				indent: false,
 				'align-left': false,
 				'align-center': false,
 				'align-right': false,
-				'image': false,
-				'undo': false,
-				'redo': false,
-				'fullscreen': false
+				image: false,
+				undo: false,
+				redo: false,
+				fullscreen: false
 			}
 		};
-		this.fontColor = '#333333';
 		this.fontColors = [
 			'#000000','#E60000','#FF9900','#FFFF00','#058A00','#0066CC','#9834FF',
 			'#ffffff','#FACCCC','#FFEBCC','#FFFFCC','#CCE8CC','#CCE0F5','#EBD6FF',
@@ -46,41 +43,25 @@ class Editor extends React.Component{
 		this.selection = {};
 
 		this.hasFocus = this.hasFocus.bind(this);
+
+		this.setMenuStatus = this.setMenuStatus.bind(this);
+		this.setOneMenuStatus = this.setOneMenuStatus.bind(this);
+		this.setFullScreenState = this.setFullScreenState.bind(this);
 	}
 	componentDidMount(){
-		// new Link(this);
+		this.container = document.querySelector('.d-e-container');
 		this.content = document.querySelector('.d-e-container .d-e-content');
+		document.addEventListener(
+		    'webkitfullscreenchange',
+		    this.setFullScreenState
+		);
 	}
-	createRange(){
-		let { anchorNode, anchorOffset, focusNode, focusOffset } = this.selection;
-		let range = document.createRange();
-		let selection = document.getSelection();
-
-		if(!anchorNode)return;
-		try{
-			range.setStart(anchorNode, anchorOffset);
-			range.setEnd(focusNode, focusOffset);
-			selection.removeAllRanges();
-			selection.addRange( range );
-		}catch(err){
-			// 不报错
-		}
-	}
-	_handleToolClick(id){
-		const { toolStatus } = this.state;
-
-		if(id && id in toolStatus){
-			this.setState({
-				toolStatus: {
-					...toolStatus,
-					[id]: !toolStatus[id]
-				} 
-			}, () => {
-				this._handleSetContent(id);
-			})			
-		}
-	}
-	_renderFontColorPicker(){
+    setFullScreenState(target, type) {
+    	this.setMenuStatus({
+    		fullscreen: document.fullscreenElement === this.container
+    	})    	
+    }
+	renderFontColorPicker(){
 		return this.fontColors.map(color => {
 			return <span 
 				className="d-e-color-options" 
@@ -90,12 +71,12 @@ class Editor extends React.Component{
 					backgroundColor: color
 				}}
 				onClick={() => {
-					this._handleSetContent('font-colors', color); 
+					this.handleSetContent('font-colors', color); 
 				}}
 			></span>;
 		})
 	}
-	_renderFontSizePicker(){
+	renderFontSizePicker(){
 		return Object.keys(this.fontSize).sort().reverse().map(size => {
 			return <li 
 				className="f-z-li" 
@@ -104,32 +85,19 @@ class Editor extends React.Component{
 					fontSize: this.fontSize[size]
 				}}
 				onClick={() => {
-					this._handleSetContent('font-size', size);
+					this.handleSetContent('font-size', size);
 				}}
 			>{this.fontSize[size]}</li>;
 		})
 	}
-	hasFocus(){
-		return document.activeElement === this.content;
+	handleToolClick(id){
+		this.handleSetContent(id);
 	}
+	handleSetContent(type, params) {
+		const { menuStatus } = this.state;
 
-	getSelection(){
-		const selection = document.getSelection();
-		const { anchorNode, anchorOffset, focusNode, focusOffset } = selection;
-		this.selection = {
-			anchorNode, 
-			anchorOffset, 
-			focusNode, 
-			focusOffset,
-			text: selection.toString()
-		};
-	}
-	_handleSetContent(type, params){
-		const { toolStatus } = this.state;
-
-		if(typeof type === 'string' && type in toolStatus){
-
-			switch(type){
+		if (typeof type === 'string' && type in menuStatus) {
+			switch (type) {
 				case 'bold':
 					this._cmd('bold');
 					break;
@@ -169,174 +137,223 @@ class Editor extends React.Component{
 					this._cmd('redo');
 					break;
 				case 'fullscreen':
-					toolStatus['fullscreen'] ? this._exitFullscreen() : this._fullScreen();
+					menuStatus['fullscreen']
+						? this.exitFullscreen()
+						: this.fullScreen();
 					break;
 			}
 		}
 	}
-	_fullScreen() {
-        if (document.body.requestFullScreen) {
-            document.body.requestFullScreen();
-        } else if (document.body.webkitRequestFullScreen) {
-            document.body.webkitRequestFullScreen();
-        }
-    }
-    _exitFullscreen() {
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-        }
-    }
-	_setIndent(){
-		this.state.toolStatus['indent'] ? this._cmd('indent') : this._cmd('outdent');
-	}
-	_cmd(...args){
-		document.execCommand(...args);
-	}
-	_hasParent(node, nodeName){
-		let result = false;
-		
-		if(!node)return result;
-		do{
-			if( node.parentNode.nodeName.toLowerCase() === nodeName ){
-				result = true;
-				break;
+	// 单个菜单状态
+	setOneMenuStatus(status){
+		this.createRange();
+		this.setState({
+			menuStatus: {
+				...this.state.menuStatus,
+				...status
 			}
-			node = node.parentNode;
-		}while(node.parentNode !== this.content);
-		return result;
+		},() => {
+			// 更新同类菜单状态，如左/中/右对齐
+			this.setMenuStatus();
+		})
+
 	}
-	getCurrentStyle(){
-		if(!this.hasFocus())return [];
+	setMenuStatus(status){
+		let styles = [];
+		const menuStatus = {};
+		const currentStatus = {};
+		// reset
+		for(let menu in this.state.menuStatus){
+			if(menu !== 'fullscreen')
+			menuStatus[menu] = false;
+		}
+
+		this.getSelection();
+		styles = this.getCurrentStyle();
+		styles.forEach(item => {
+			currentStatus[item] = true;
+		})
+		this.setState({
+			menuStatus: {
+				...menuStatus,
+				...currentStatus,
+				...status
+			}
+		})
+	}
+
+
+	fullScreen() {
+		if (this.container.requestFullScreen) {
+			this.container.requestFullScreen();
+		} else if (this.container.webkitRequestFullScreen) {
+			this.container.webkitRequestFullScreen();
+		}
+	}
+	exitFullscreen() {
+		if (document.exitFullscreen) {
+			document.exitFullscreen();
+		} else if (document.webkitExitFullscreen) {
+			document.webkitExitFullscreen();
+		}
+	}
+	createRange() {
+		let {
+			anchorNode,
+			anchorOffset,
+			focusNode,
+			focusOffset
+		} = this.selection;
+		let range = document.createRange();
+		let selection = document.getSelection();
+
+		if (!anchorNode) return;
+		try {
+			range.setStart(anchorNode, anchorOffset);
+			range.setEnd(focusNode, focusOffset);
+			selection.removeAllRanges();
+			selection.addRange(range);
+		} catch (err) {
+			// 不报错
+		}
+	}
+	hasFocus() {
+		return document.activeElement === this.content;
+	}
+
+	getSelection() {
+		const selection = document.getSelection();
+		const { anchorNode, anchorOffset, focusNode, focusOffset } = selection;
+
+		if(!this.hasFocus())return false;
+		this.selection = {
+			anchorNode,
+			anchorOffset,
+			focusNode,
+			focusOffset,
+			text: selection.toString()
+		};
+	}
+	getCurrentStyle() {
+		if (!this.hasFocus()) return [];
 		const result = [];
 		const status = {
 			'font-weight': 'bold',
 			'text-decoration-line': 'underline',
 			'font-style': 'italic',
-			'color': 'font-colors',
+			color: 'font-colors',
 			'font-size': 'font-size',
 			'text-align': ''
-		}
+		};
 		const node = this.selection.anchorNode.parentNode;
 		const computed = (node, names) => {
-			if(node === this.content)return names;
+			if (node === this.content) return names;
 			const styles = node.getAttribute('style');
 
-			if(!styles)return names;
-			styles.split('; ').forEach(item => {
-				let styleName = item.split(': ')[0];
-				let styleValue = item.split(': ')[1];
+			if (!styles) return names;
+			styles.split(';').forEach(item => {
+				if (!item.length) return false;
+				let styleName = item.split(': ')[0].trim();
+				let styleValue = item.split(': ')[1].trim();
 
-				if(styleName in status){
-					if(styleName === 'text-align'){
-						names.push({
-							'left': 'align-left',
-							'center': 'align-center',
-							'right': 'align-right'
-						}[styleValue]);
-					}else{
-						names.push(status[styleName]);						
+				if (styleName in status) {
+					if (styleName === 'text-align') {
+						names.push(
+							{
+								left: 'align-left',
+								center: 'align-center',
+								right: 'align-right'
+							}[styleValue]
+						);
+					} else {
+						names.push(status[styleName]);
 					}
 				}
-			})
+			});
 			return computed(node.parentNode, names);
-		}
+		};
 		return computed(node, result);
 	}
-	render(){
-		const { toolStatus } = this.state;
+
+	render() {
+		const { menuStatus } = this.state;
 
 		return (
 			<div className="d-e-container">
-				<div className="d-e-toolbar" >
-					<Menu type="bold" icon="icon-bold"  />
-					<div className="d-e-menu">
-						<button id="de-underline" className="d-e-button icon-underline" onClick={() => {
-							this._handleToolClick('underline');
-						}}></button>
-					</div>
-					<div className="d-e-menu">
-						<button id="de-italic" className="d-e-button icon-italic" onClick={() => {
-							this._handleToolClick('italic');
-						}}></button>
-					</div>
+				<div className="d-e-toolbar">
+					<Menu setMenuStatus={this.setOneMenuStatus} type="bold" icon="icon-bold" active={menuStatus.bold} />
+					<Menu setMenuStatus={this.setOneMenuStatus} type="underline" icon="icon-underline" active={menuStatus.underline} />
+					<Menu setMenuStatus={this.setOneMenuStatus} type="italic" icon="icon-italic" active={menuStatus.italic} />					
 					<div className="d-e-menu d-e-font-color">
-						<button tabIndex="0" className="d-e-button icon-font-colors" onClick={() => {
-							this._handleToolClick('font-colors');
-						}}></button>
-						<div id="de-font-colors" className="d-e-submenu d-e-color-panel">
-							{this._renderFontColorPicker()}
+						<button
+							tabIndex="0"
+							className="d-e-button icon-font-colors"
+							onClick={() => {
+								this.handleToolClick('font-colors');
+							}}
+						/>
+						<div
+							id="de-font-colors"
+							className="d-e-submenu d-e-color-panel"
+						>
+							{this.renderFontColorPicker()}
 						</div>
 					</div>
 					<div className="d-e-menu d-e-font-size">
-						<button tabIndex="0" className="d-e-button icon-font-size" onClick={() => {
-							this._handleToolClick('font-size');
-						}}></button>
-						<div id="de-font-size" className="d-e-submenu d-e-font-size-list">
+						<button
+							tabIndex="0"
+							className="d-e-button icon-font-size"
+							onClick={() => {
+								this.handleToolClick('font-size');
+							}}
+						/>
+						<div
+							id="de-font-size"
+							className="d-e-submenu d-e-font-size-list"
+						>
 							<ul className="f-z-ul">
-								{this._renderFontSizePicker()}
+								{this.renderFontSizePicker()}
 							</ul>
 						</div>
 					</div>
+					<Menu setMenuStatus={this.setOneMenuStatus} type="indent" icon="icon-indent" active={menuStatus.indent} />
+					<Menu setMenuStatus={this.setOneMenuStatus} type="align-left" icon="icon-align-left" active={menuStatus['align-left']} />
+					<Menu setMenuStatus={this.setOneMenuStatus} type="align-center" icon="icon-align-center" active={menuStatus['align-center']} />
+					<Menu setMenuStatus={this.setOneMenuStatus} type="align-right" icon="icon-align-right" active={menuStatus['align-right']} />
 					<div className="d-e-menu">
-						<button id="de-indent" className="d-e-button icon-indent" onClick={() => {
-							this._handleToolClick('indent');
-						}}></button>
+						<button
+							id="de-image"
+							className="d-e-button icon-image"
+							onClick={() => {
+								this.handleToolClick('image');
+							}}
+						/>
 					</div>
-					<div className="d-e-menu">
-						<button id="de-align-left" className="d-e-button icon-align-left" onClick={() => {
-							this._handleToolClick('align-left');
-						}}></button>
-					</div>
-					<div className="d-e-menu">
-						<button id="de-align-center" className="d-e-button icon-align-center" onClick={() => {
-							this._handleToolClick('align-center');
-						}}></button>
-					</div>
-					<div className="d-e-menu">
-						<button id="de-align-right" className="d-e-button icon-align-right" onClick={() => {
-							this._handleToolClick('align-right');
-						}}></button>
-					</div>
-					<div className="d-e-menu">
-						<button id="de-image" className="d-e-button icon-image" onClick={() => {
-							this._handleToolClick('image');
-						}}></button>
-					</div>
-					<div className="d-e-menu">
-						<button id="de-undo" className="d-e-button icon-undo" onClick={() => {
-							this._handleToolClick('undo');
-						}}></button>
-					</div>
-					<div className="d-e-menu">
-						<button id="de-redo" className="d-e-button icon-redo" onClick={() => {
-							this._handleToolClick('redo');
-						}}></button>
-					</div>
+					<Menu setMenuStatus={this.setOneMenuStatus} type="undo" icon="icon-undo" />
+					<Menu setMenuStatus={this.setOneMenuStatus} type="redo" icon="icon-redo" />
 					<div className="d-e-menu d-e-fullscreen">
-						<button id="de-fullscreen" className="d-e-button icon-fullscreen" onClick={() => {
-							this._handleToolClick('fullscreen');
+						<button id="de-fullscreen" className={classnames('d-e-button icon-fullscreen', {
+							'd-e-button-active': menuStatus.fullscreen
+						})} onClick={() => {
+							this.handleToolClick('fullscreen');
 						}}></button>
 					</div>
 				</div>
-				<div 
-					className="d-e-content" 
-					contentEditable="true" 
+				<div
+					className="d-e-content"
+					contentEditable="true"
 					suppressContentEditableWarning="true"
 					onMouseUp={() => {
-						let styles = [];
-						this.getSelection();	
-						styles = this.getCurrentStyle();
-						styles.forEach(item => {
-							
-						})
-						console.log(  styles);
+						setTimeout(() => {
+							this.setMenuStatus();
+						},10)
 					}}
 					onKeyUp={() => {
-						this.getSelection();
+						this.setMenuStatus();
 					}}
-					>
+				>
+					<p>富文本编辑器富文本编辑器富文本编辑器</p>
+					<p></p>
 					<p>富文本编辑器富文本编辑器富文本编辑器</p>
 				</div>
 			</div>
@@ -344,5 +361,4 @@ class Editor extends React.Component{
 	}
 }
 
-export default Editor;
-
+export default Index;
