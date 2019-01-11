@@ -2,6 +2,7 @@ import '@css/index.less';
 import React from 'react';
 // import Link from '@plugins/Link';
 import Menu from '@plugins/Menu';
+import DropMenu from '@plugins/DropMenu';
 import classnames from 'classnames';
 
 class Index extends React.Component {
@@ -9,28 +10,60 @@ class Index extends React.Component {
 		super(props);
 		this.state = {
 			menuStatus: {
-				bold: false,
-				underline: false,
-				italic: false,
-				'font-colors': false,
-				'font-size': false,
-				link: false,
-				indent: false,
+				'bold': false,
+				'underline': false,
+				'italic': false,
+				'indent': false,
 				'align-left': false,
 				'align-center': false,
 				'align-right': false,
-				image: false,
-				undo: false,
-				redo: false,
-				fullscreen: false
+				'undo': false,
+				'redo': false,
+				'fullscreen': false
+			},
+			dropMenuStatus: {
+				'font-colors': false,
+				'font-size': false,
+				'link': false,
+				'image': false
 			}
 		};
 		this.fontColors = [
-			'#000000','#E60000','#FF9900','#FFFF00','#058A00','#0066CC','#9834FF',
-			'#ffffff','#FACCCC','#FFEBCC','#FFFFCC','#CCE8CC','#CCE0F5','#EBD6FF',
-			'#BBBBBB','#F06666','#FFC266','#FFFF66','#67B966','#66A3E0','#C285FF',
-			'#888888','#A10000','#B26B00','#B2B200','#026100','#0047B2','#6B24B2',
-			'#444444','#5C0000','#663D00','#666600','#013700','#002966','#3D1566'
+			'#000000',
+			'#E60000',
+			'#FF9900',
+			'#FFFF00',
+			'#058A00',
+			'#0066CC',
+			'#9834FF',
+			'#ffffff',
+			'#FACCCC',
+			'#FFEBCC',
+			'#FFFFCC',
+			'#CCE8CC',
+			'#CCE0F5',
+			'#EBD6FF',
+			'#BBBBBB',
+			'#F06666',
+			'#FFC266',
+			'#FFFF66',
+			'#67B966',
+			'#66A3E0',
+			'#C285FF',
+			'#888888',
+			'#A10000',
+			'#B26B00',
+			'#B2B200',
+			'#026100',
+			'#0047B2',
+			'#6B24B2',
+			'#444444',
+			'#5C0000',
+			'#663D00',
+			'#666600',
+			'#013700',
+			'#002966',
+			'#3D1566'
 		];
 		this.fontSize = {
 			'1': 'x-small',
@@ -46,142 +79,143 @@ class Index extends React.Component {
 
 		this.setMenuStatus = this.setMenuStatus.bind(this);
 		this.setOneMenuStatus = this.setOneMenuStatus.bind(this);
+		this.setDropMenuStatus = this.setDropMenuStatus.bind(this);
 		this.setFullScreenState = this.setFullScreenState.bind(this);
 	}
-	componentDidMount(){
+	componentDidMount() {
 		this.container = document.querySelector('.d-e-container');
 		this.content = document.querySelector('.d-e-container .d-e-content');
 		document.addEventListener(
-		    'webkitfullscreenchange',
-		    this.setFullScreenState
+			'webkitfullscreenchange',
+			this.setFullScreenState
 		);
 	}
-    setFullScreenState(target, type) {
-    	this.setMenuStatus({
-    		fullscreen: document.fullscreenElement === this.container
-    	})    	
-    }
-	renderFontColorPicker(){
+	setFullScreenState(target, type) {
+		this.setMenuStatus({
+			fullscreen: document.fullscreenElement === this.container
+		});
+	}
+	renderFontColorPicker() {
 		return this.fontColors.map(color => {
-			return <span 
-				className="d-e-color-options" 
-				key={color} 
-				tabIndex="0" 
-				style={{
-					backgroundColor: color
-				}}
-				onClick={() => {
-					this.handleSetContent('font-colors', color); 
-				}}
-			></span>;
-		})
+			return (
+				<span
+					className="d-e-color-options"
+					key={color}
+					tabIndex="0"
+					style={{
+						backgroundColor: color
+					}}
+					onClick={() => {
+						this.setDropMenuStatus({
+							'font-colors': false
+						})
+						this.createRange();
+						this.handleSetContent('font-colors', color);
+					}}
+				/>
+			);
+		});
 	}
-	renderFontSizePicker(){
-		return Object.keys(this.fontSize).sort().reverse().map(size => {
-			return <li 
-				className="f-z-li" 
-				key={size} 
-				style={{
-					fontSize: this.fontSize[size]
-				}}
-				onClick={() => {
-					this.handleSetContent('font-size', size);
-				}}
-			>{this.fontSize[size]}</li>;
-		})
+	renderFontSizePicker() {
+		return Object.keys(this.fontSize)
+			.sort()
+			.reverse()
+			.map(size => {
+				return (
+					<li
+						className="f-z-li"
+						key={size}
+						style={{
+							fontSize: this.fontSize[size]
+						}}
+						onClick={() => {
+							this.setDropMenuStatus({
+								'font-size': false
+							})
+							this.handleSetContent('font-size', size);
+						}}
+					>
+						{this.fontSize[size]}
+					</li>
+				);
+			});
 	}
-	handleToolClick(id){
+	handleToolClick(id) {
 		this.handleSetContent(id);
 	}
+	cmd(...args) {
+		document.execCommand(...args);
+	}
 	handleSetContent(type, params) {
-		const { menuStatus } = this.state;
-
-		if (typeof type === 'string' && type in menuStatus) {
-			switch (type) {
-				case 'bold':
-					this._cmd('bold');
-					break;
-				case 'underline':
-					this._cmd('underline');
-					break;
-				case 'italic':
-					this._cmd('italic');
-					break;
-				case 'font-colors':
-					this.createRange();
-					this._cmd('foreColor', false, params);
-					break;
-				case 'font-size':
-					this.createRange();
-					this._cmd('fontSize', false, params);
-					break;
-				case 'link':
-					this._cmd('createLink', false, params);
-					break;
-				case 'indent':
-					this._setIndent();
-					break;
-				case 'align-left':
-					this._cmd('justifyLeft');
-					break;
-				case 'align-center':
-					this._cmd('justifyCenter');
-					break;
-				case 'align-right':
-					this._cmd('justifyRight');
-					break;
-				case 'undo':
-					this._cmd('undo');
-					break;
-				case 'redo':
-					this._cmd('redo');
-					break;
-				case 'fullscreen':
-					menuStatus['fullscreen']
-						? this.exitFullscreen()
-						: this.fullScreen();
-					break;
-			}
+		const { menuStatus, dropMenuStatus } = this.state;
+		switch (type) {
+			case 'font-colors':
+				this.createRange();
+				this.cmd('foreColor', false, params);
+				break;
+			case 'font-size':
+				this.createRange();
+				this.cmd('fontSize', false, params);
+				break;
+			case 'link':
+				this.cmd('createLink', false, params);
+				break;
+			case 'fullscreen':
+				menuStatus['fullscreen']
+					? this.exitFullscreen()
+					: this.fullScreen();
+				break;
 		}
 	}
 	// 单个菜单状态
-	setOneMenuStatus(status){
+	setOneMenuStatus(status) {
 		this.createRange();
-		this.setState({
-			menuStatus: {
-				...this.state.menuStatus,
-				...status
+		this.setState(
+			{
+				dropMenuStatus: this.state.dropMenuStatus,
+				menuStatus: {
+					...this.state.menuStatus,
+					...status
+				}
+			},
+			() => {
+				// 更新同类菜单状态，如左/中/右对齐
+				this.setMenuStatus();
 			}
-		},() => {
-			// 更新同类菜单状态，如左/中/右对齐
-			this.setMenuStatus();
-		})
-
+		);
 	}
-	setMenuStatus(status){
+	setMenuStatus(status) {
 		let styles = [];
 		const menuStatus = {};
 		const currentStatus = {};
 		// reset
-		for(let menu in this.state.menuStatus){
-			if(menu !== 'fullscreen')
-			menuStatus[menu] = false;
+		for (let menu in this.state.menuStatus) {
+			if (menu !== 'fullscreen') menuStatus[menu] = false;
 		}
 
 		this.getSelection();
 		styles = this.getCurrentStyle();
 		styles.forEach(item => {
 			currentStatus[item] = true;
-		})
+		});
 		this.setState({
+			dropMenuStatus: this.state.dropMenuStatus,
 			menuStatus: {
 				...menuStatus,
 				...currentStatus,
 				...status
 			}
+		});
+	}
+	setDropMenuStatus(status){
+		this.setState({
+			menuStatus: this.state.menuStatus,
+			dropMenuStatus: {
+				...this.state.dropMenuStatus,
+				...status
+			}
 		})
 	}
-
 
 	fullScreen() {
 		if (this.container.requestFullScreen) {
@@ -225,7 +259,7 @@ class Index extends React.Component {
 		const selection = document.getSelection();
 		const { anchorNode, anchorOffset, focusNode, focusOffset } = selection;
 
-		if(!this.hasFocus())return false;
+		if (!this.hasFocus()) return false;
 		this.selection = {
 			anchorNode,
 			anchorOffset,
@@ -276,37 +310,47 @@ class Index extends React.Component {
 	}
 
 	render() {
-		const { menuStatus } = this.state;
+		const { menuStatus, dropMenuStatus } = this.state;
 
 		return (
 			<div className="d-e-container">
 				<div className="d-e-toolbar">
-					<Menu setMenuStatus={this.setOneMenuStatus} type="bold" icon="icon-bold" active={menuStatus.bold} />
-					<Menu setMenuStatus={this.setOneMenuStatus} type="underline" icon="icon-underline" active={menuStatus.underline} />
-					<Menu setMenuStatus={this.setOneMenuStatus} type="italic" icon="icon-italic" active={menuStatus.italic} />					
-					<div className="d-e-menu d-e-font-color">
-						<button
-							tabIndex="0"
-							className="d-e-button icon-font-colors"
-							onClick={() => {
-								this.handleToolClick('font-colors');
-							}}
-						/>
-						<div
-							id="de-font-colors"
-							className="d-e-submenu d-e-color-panel"
-						>
+					<Menu
+						setMenuStatus={this.setOneMenuStatus}
+						type="bold"
+						icon="icon-bold"
+						active={menuStatus.bold}
+					/>
+					<Menu
+						setMenuStatus={this.setOneMenuStatus}
+						type="underline"
+						icon="icon-underline"
+						active={menuStatus.underline}
+					/>
+					<Menu
+						setMenuStatus={this.setOneMenuStatus}
+						type="italic"
+						icon="icon-italic"
+						active={menuStatus.italic}
+					/>
+					<DropMenu
+						classNames="d-e-font-color"
+						type="font-colors"
+						icon="icon-font-colors"
+						active={dropMenuStatus['font-colors']}
+						setMenuStatus={this.setDropMenuStatus}
+					>
+						<div className="d-e-submenu d-e-color-panel">
 							{this.renderFontColorPicker()}
 						</div>
-					</div>
-					<div className="d-e-menu d-e-font-size">
-						<button
-							tabIndex="0"
-							className="d-e-button icon-font-size"
-							onClick={() => {
-								this.handleToolClick('font-size');
-							}}
-						/>
+					</DropMenu>
+					<DropMenu
+						classNames="d-e-font-size"
+						type="font-size"
+						icon="icon-font-size"
+						active={dropMenuStatus['font-size']}
+						setMenuStatus={this.setDropMenuStatus}
+					>
 						<div
 							id="de-font-size"
 							className="d-e-submenu d-e-font-size-list"
@@ -315,11 +359,31 @@ class Index extends React.Component {
 								{this.renderFontSizePicker()}
 							</ul>
 						</div>
-					</div>
-					<Menu setMenuStatus={this.setOneMenuStatus} type="indent" icon="icon-indent" active={menuStatus.indent} />
-					<Menu setMenuStatus={this.setOneMenuStatus} type="align-left" icon="icon-align-left" active={menuStatus['align-left']} />
-					<Menu setMenuStatus={this.setOneMenuStatus} type="align-center" icon="icon-align-center" active={menuStatus['align-center']} />
-					<Menu setMenuStatus={this.setOneMenuStatus} type="align-right" icon="icon-align-right" active={menuStatus['align-right']} />
+					</DropMenu>
+					<Menu
+						setMenuStatus={this.setOneMenuStatus}
+						type="indent"
+						icon="icon-indent"
+						active={menuStatus.indent}
+					/>
+					<Menu
+						setMenuStatus={this.setOneMenuStatus}
+						type="align-left"
+						icon="icon-align-left"
+						active={menuStatus['align-left']}
+					/>
+					<Menu
+						setMenuStatus={this.setOneMenuStatus}
+						type="align-center"
+						icon="icon-align-center"
+						active={menuStatus['align-center']}
+					/>
+					<Menu
+						setMenuStatus={this.setOneMenuStatus}
+						type="align-right"
+						icon="icon-align-right"
+						active={menuStatus['align-right']}
+					/>
 					<div className="d-e-menu">
 						<button
 							id="de-image"
@@ -329,14 +393,29 @@ class Index extends React.Component {
 							}}
 						/>
 					</div>
-					<Menu setMenuStatus={this.setOneMenuStatus} type="undo" icon="icon-undo" />
-					<Menu setMenuStatus={this.setOneMenuStatus} type="redo" icon="icon-redo" />
+					<Menu
+						setMenuStatus={this.setOneMenuStatus}
+						type="undo"
+						icon="icon-undo"
+					/>
+					<Menu
+						setMenuStatus={this.setOneMenuStatus}
+						type="redo"
+						icon="icon-redo"
+					/>
 					<div className="d-e-menu d-e-fullscreen">
-						<button id="de-fullscreen" className={classnames('d-e-button icon-fullscreen', {
-							'd-e-button-active': menuStatus.fullscreen
-						})} onClick={() => {
-							this.handleToolClick('fullscreen');
-						}}></button>
+						<button
+							id="de-fullscreen"
+							className={classnames(
+								'd-e-button icon-fullscreen',
+								{
+									'd-e-button-active': menuStatus.fullscreen
+								}
+							)}
+							onClick={() => {
+								this.handleToolClick('fullscreen');
+							}}
+						/>
 					</div>
 				</div>
 				<div
@@ -346,14 +425,14 @@ class Index extends React.Component {
 					onMouseUp={() => {
 						setTimeout(() => {
 							this.setMenuStatus();
-						},10)
+						}, 10);
 					}}
 					onKeyUp={() => {
 						this.setMenuStatus();
 					}}
 				>
 					<p>富文本编辑器富文本编辑器富文本编辑器</p>
-					<p></p>
+					<p />
 					<p>富文本编辑器富文本编辑器富文本编辑器</p>
 				</div>
 			</div>

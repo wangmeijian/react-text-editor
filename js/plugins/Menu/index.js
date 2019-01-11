@@ -69,9 +69,6 @@ class Menu extends React.Component {
 					onClick={() => {
 						this.handleSetContent(type);
 					}}
-					onMouseDown={() => {
-						
-					}}
 				/>
 			</div>
 		);

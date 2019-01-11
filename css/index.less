@@ -3,7 +3,8 @@
 @fontColor: #333;
 @borderColor: #ccc;
 @buttonColor: #666;
-@buttonHoverBgColor: #ddd;
+@buttonHoverBgColor: #e7e7e7;
+@buttonActiveBgColor: #d7d6d6;
 
 .d-e-container{
 	position: relative;
@@ -23,13 +24,17 @@
 			border: none;
 			padding: 0;
 			font-size: 16px;
+			cursor: pointer;
 			text-align: center;
 			line-height: 26px;
 			color: @buttonColor;
 			font-family: 'iconfont';
 			border-radius: 2px;
-			&:hover,&.d-e-button-active{
+			&:hover{
 				background-color: @buttonHoverBgColor;
+			}
+			&.d-e-button-active{
+				background-color: @buttonActiveBgColor;
 			}
 		}
 		.d-e-menu{
@@ -58,11 +63,13 @@
 					display: block;
 				}
 			};
+			.d-e-button-active:hover{
+				background-color: @buttonActiveBgColor;
+			}
 			.d-e-submenu{
 				position: absolute;
 				left: 0;
-				top: 26px;
-				display: none;
+				top: 31px;
 				background-color: white;
 			}
 		}

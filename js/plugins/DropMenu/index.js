@@ -2,28 +2,35 @@ import React from 'react';
 import classnames from 'classnames';
 import Menu from '@js/plugins/Menu';
 
-class DropMenu extends Menu{
+class DropMenu extends React.Component{
 	constructor(props){
 		super(props);
-
 	}
 	render(){
+		const { classNames, type, icon, active, setMenuStatus } = this.props;
+
 		return (
-			<div className="d-e-menu d-e-font-color">
+			<div 
+				className={classnames("d-e-menu", {
+					[classNames]: true
+				})}>
 				<button
 					tabIndex="0"
-					className="d-e-button icon-font-colors"
+					className={classnames("d-e-button", {
+						[icon]: true,
+						'd-e-button-active': active
+					})}
 					onClick={() => {
-						this.handleToolClick('font-colors');
+						console.log(type, !active);
+						setMenuStatus({
+							[type]: !active
+						})
 					}}
 				/>
-				<div
-					id="de-font-colors"
-					className="d-e-submenu d-e-color-panel"
-				>
-					{this.renderFontColorPicker()}
-				</div>
+				{active ? this.props.children : ''}
 			</div>
 		)
 	}
 }
+
+export default DropMenu;
