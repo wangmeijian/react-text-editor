@@ -1,7 +1,7 @@
 import React from 'react';
 import classnames from 'classnames';
 /**
- * 有操作面板的菜单基础类
+ * 菜单基础类
  */
 class Menu extends React.Component {
 	constructor(props) {
