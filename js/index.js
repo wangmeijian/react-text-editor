@@ -351,10 +351,7 @@ class Index extends React.Component {
 						active={dropMenuStatus['font-size']}
 						setMenuStatus={this.setDropMenuStatus}
 					>
-						<div
-							id="de-font-size"
-							className="d-e-submenu d-e-font-size-list"
-						>
+						<div className="d-e-submenu d-e-font-size-list" >
 							<ul className="f-z-ul">
 								{this.renderFontSizePicker()}
 							</ul>
@@ -384,6 +381,32 @@ class Index extends React.Component {
 						icon="icon-align-right"
 						active={menuStatus['align-right']}
 					/>
+					<DropMenu
+						classNames="d-e-link"
+						type="link"
+						icon="icon-link"
+						active={dropMenuStatus['link']}
+						setMenuStatus={this.setDropMenuStatus}
+					>
+						<div className="d-e-submenu d-e-link-panel">
+							<div className="d-e-link-item">
+								<span className="d-e-link-desc">链接地址：</span>
+								<input type="text" tabIndex="0" className="d-e-link-input" />
+							</div>
+							<div className="d-e-link-item">
+								<button onClick={() => {
+									this.setDropMenuStatus({
+										link: false
+									})
+								}} className="d-e-link-save" tabIndex="0">保存</button>
+								<button onClick={() => {
+									this.setDropMenuStatus({
+										link: false
+									})
+								}} className="d-e-link-cancel" tabIndex="0">取消</button>
+							</div>
+						</div>
+					</DropMenu>
 					<div className="d-e-menu">
 						<button
 							id="de-image"
