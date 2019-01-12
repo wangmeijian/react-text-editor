@@ -103,7 +103,7 @@ class Index extends React.Component {
 		this.selection = {};
 
 		this.hasFocus = this.hasFocus.bind(this);
-
+		this.setHeader = this.setHeader.bind(this);
 		this.setMenuStatus = this.setMenuStatus.bind(this);
 		this.setOneMenuStatus = this.setOneMenuStatus.bind(this);
 		this.setDropMenuStatus = this.setDropMenuStatus.bind(this);
@@ -191,12 +191,16 @@ class Index extends React.Component {
 	cmd(...args) {
 		document.execCommand(...args);
 	}
+	setHeader(tag){
+		let html = this.selection.text.split(/\n/).map(item => `<${tag}>${item}</${tag}>`);
+		this.cmd('insertHTML', false, html.join(''));
+	}
 	handleSetContent(type, params) {
 		const { menuStatus, dropMenuStatus } = this.state;
 		switch (type) {
 			case 'heading':
 				this.createRange();
-				this.cmd('formatBlock', false, params);
+				this.setHeader(params);
 				this.getSelection();
 				break;
 			case 'font-colors':
@@ -519,9 +523,13 @@ class Index extends React.Component {
 						this.setMenuStatus();
 					}}
 				>
-					<p>富文本编辑器富文本编辑器富文本编辑器</p>
-					<p />
-					<p>富文本编辑器富文本编辑器富文本编辑器</p>
+					<h1 style={{
+						textAlign: 'center'
+					}}>editor-react</h1>
+					<h4 style={{
+						textAlign: 'center'
+					}}>富文本编辑器</h4>
+					<p>免费、开源</p>
 				</div>
 			</div>
 		);
