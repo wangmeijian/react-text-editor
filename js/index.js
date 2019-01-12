@@ -22,6 +22,7 @@ class Index extends React.Component {
 				'fullscreen': false
 			},
 			dropMenuStatus: {
+				'heading': false,
 				'font-colors': false,
 				'font-size': false,
 				'link': false,
@@ -73,6 +74,32 @@ class Index extends React.Component {
 			'5': 'x-large',
 			'6': 'xx-large'
 		};
+		this.heading = [
+			{
+				tag: 'H1',
+				node: <h1>标题1</h1>				
+			},
+			{
+				tag: 'h2',
+				node: <h2>标题2</h2>				
+			},
+			{
+				tag: 'h3',
+				node: <h3>标题3</h3>				
+			},
+			{
+				tag: 'h4',
+				node: <h4>标题4</h4>				
+			},
+			{
+				tag: 'h5',
+				node: <h5>标题5</h5>				
+			},
+			{
+				tag: 'h6',
+				node: <h6>标题6</h6>				
+			}
+		];
 		this.selection = {};
 
 		this.hasFocus = this.hasFocus.bind(this);
@@ -93,6 +120,24 @@ class Index extends React.Component {
 	setFullScreenState(target, type) {
 		this.setMenuStatus({
 			fullscreen: document.fullscreenElement === this.container
+		});
+	}
+	renderHeadingPicker(){
+		return this.heading.map(head => {
+			return (
+				<li
+					className="f-z-li"
+					key={head.tag}
+					onClick={() => {
+						this.setDropMenuStatus({
+							heading: false
+						});
+						this.handleSetContent('heading', head.tag);
+					}}
+				>
+					{head.node}
+				</li>
+			);
 		});
 	}
 	renderFontColorPicker() {
@@ -149,6 +194,11 @@ class Index extends React.Component {
 	handleSetContent(type, params) {
 		const { menuStatus, dropMenuStatus } = this.state;
 		switch (type) {
+			case 'heading':
+				this.createRange();
+				this.cmd('formatBlock', false, params);
+				this.getSelection();
+				break;
 			case 'font-colors':
 				this.createRange();
 				this.cmd('foreColor', false, params);
@@ -167,7 +217,7 @@ class Index extends React.Component {
 				break;
 		}
 	}
-	// 单个菜单状态
+	// 设置单个菜单状态
 	setOneMenuStatus(status) {
 		this.createRange();
 		this.setState(
@@ -275,7 +325,7 @@ class Index extends React.Component {
 			'font-weight': 'bold',
 			'text-decoration-line': 'underline',
 			'font-style': 'italic',
-			color: 'font-colors',
+			'color': 'font-colors',
 			'font-size': 'font-size',
 			'text-align': ''
 		};
@@ -291,7 +341,10 @@ class Index extends React.Component {
 				let styleValue = item.split(': ')[1].trim();
 
 				if (styleName in status) {
-					if (styleName === 'text-align') {
+					// 设置heading再设置bold会取消heading的bold
+					if (styleName === 'font-weight') {
+						styleValue === 'bold' && names.push('bold');
+					}else if (styleName === 'text-align') {
 						names.push(
 							{
 								left: 'align-left',
@@ -314,7 +367,18 @@ class Index extends React.Component {
 
 		return (
 			<div className="d-e-container">
-				<div className="d-e-toolbar">
+				<div className="d-e-toolbar">					
+					<DropMenu
+						classNames="d-e-heading"
+						type="heading"
+						icon="icon-header"
+						active={dropMenuStatus['heading']}
+						setMenuStatus={this.setDropMenuStatus}
+					>
+						<div className="d-e-submenu d-e-heading-panel">
+							<ul className="d-e-heading-list">{this.renderHeadingPicker()}</ul>
+						</div>
+					</DropMenu>
 					<Menu
 						setMenuStatus={this.setOneMenuStatus}
 						type="bold"
@@ -351,7 +415,7 @@ class Index extends React.Component {
 						active={dropMenuStatus['font-size']}
 						setMenuStatus={this.setDropMenuStatus}
 					>
-						<div className="d-e-submenu d-e-font-size-list" >
+						<div className="d-e-submenu d-e-font-size-panel" >
 							<ul className="f-z-ul">
 								{this.renderFontSizePicker()}
 							</ul>
@@ -444,6 +508,7 @@ class Index extends React.Component {
 				<div
 					className="d-e-content"
 					contentEditable="true"
+					spellCheck="false"
 					suppressContentEditableWarning="true"
 					onMouseUp={() => {
 						setTimeout(() => {

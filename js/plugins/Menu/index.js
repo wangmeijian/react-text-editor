@@ -34,7 +34,7 @@ class Menu extends React.Component {
 				this.cmd('createLink', false, params);
 				break;
 			case 'indent':
-				active ? this.cmd('indent') : this.cmd('outdent');
+				!active ? this.cmd('indent') : this.cmd('outdent');
 				break;
 			case 'align-left':
 				this.cmd('justifyLeft');
