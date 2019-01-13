@@ -537,16 +537,17 @@ class Index extends React.Component {
 				</div>
 				<div
 					className="d-e-content"
+					autoFocus="autofocus"
 					contentEditable="true"
 					spellCheck="false"
 					suppressContentEditableWarning="true"
 					onMouseUp={() => {
 						setTimeout(() => {
-							// this.setMenuStatus();
+							this.setMenuStatus();
 						}, 10);
 					}}
 					onKeyUp={() => {
-						// this.setMenuStatus();
+						this.setMenuStatus();
 					}}
 				>
 					<h1 style={{
