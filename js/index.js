@@ -27,7 +27,9 @@ class Index extends React.Component {
 				'font-size': false,
 				'link': false,
 				'image': false
-			}
+			},
+			linkUrl: '',
+			imageUrl: ''
 		};
 		this.fontColors = [
 			'#000000',
@@ -110,12 +112,22 @@ class Index extends React.Component {
 		this.setFullScreenState = this.setFullScreenState.bind(this);
 	}
 	componentDidMount() {
+		let anchorNode = null;
 		this.container = document.querySelector('.d-e-container');
 		this.content = document.querySelector('.d-e-container .d-e-content');
 		document.addEventListener(
 			'webkitfullscreenchange',
 			this.setFullScreenState
 		);
+		anchorNode = this.content.querySelector('h4').childNodes[0];
+		this.selection = {
+			anchorNode: anchorNode,
+			anchorOffset: anchorNode.length,
+			focusNode: anchorNode,
+			focusOffset: anchorNode.length,
+			text: ''
+		};
+		this.createRange();
 	}
 	setFullScreenState(target, type) {
 		this.setMenuStatus({
@@ -192,8 +204,14 @@ class Index extends React.Component {
 		document.execCommand(...args);
 	}
 	setHeader(tag){
-		let html = this.selection.text.split(/\n/).map(item => `<${tag}>${item}</${tag}>`);
-		this.cmd('insertHTML', false, html.join(''));
+		const selectText = this.selection.text;
+			
+		if(/\n/.test(selectText)){
+			const html = selectText.split(/\n/).map(item => `<${tag}>${item}</${tag}>`);
+			this.cmd('insertHTML', false, html.join(''));	
+		}else{
+			this.cmd('formatBlock', false, tag);
+		}
 	}
 	handleSetContent(type, params) {
 		const { menuStatus, dropMenuStatus } = this.state;
@@ -212,6 +230,9 @@ class Index extends React.Component {
 				this.cmd('fontSize', false, params);
 				break;
 			case 'link':
+				this.createRange();
+				console.log(this.selection);
+				console.log(type);
 				this.cmd('createLink', false, params);
 				break;
 			case 'fullscreen':
@@ -367,7 +388,7 @@ class Index extends React.Component {
 	}
 
 	render() {
-		const { menuStatus, dropMenuStatus } = this.state;
+		const { menuStatus, dropMenuStatus, linkUrl, imageUrl } = this.state;
 
 		return (
 			<div className="d-e-container">
@@ -459,10 +480,15 @@ class Index extends React.Component {
 						<div className="d-e-submenu d-e-link-panel">
 							<div className="d-e-link-item">
 								<span className="d-e-link-desc">链接地址：</span>
-								<input type="text" tabIndex="0" className="d-e-link-input" />
+								<input type="text" tabIndex="0" value={linkUrl} onChange={e => {
+									this.setState({
+										linkUrl: e.target.value
+									})
+								}} className="d-e-link-input" />
 							</div>
 							<div className="d-e-link-item">
 								<button onClick={() => {
+									this.handleToolClick('link', linkUrl);
 									this.setDropMenuStatus({
 										link: false
 									})
@@ -516,11 +542,11 @@ class Index extends React.Component {
 					suppressContentEditableWarning="true"
 					onMouseUp={() => {
 						setTimeout(() => {
-							this.setMenuStatus();
+							// this.setMenuStatus();
 						}, 10);
 					}}
 					onKeyUp={() => {
-						this.setMenuStatus();
+						// this.setMenuStatus();
 					}}
 				>
 					<h1 style={{
@@ -528,8 +554,8 @@ class Index extends React.Component {
 					}}>editor-react</h1>
 					<h4 style={{
 						textAlign: 'center'
-					}}>富文本编辑器</h4>
-					<p>免费、开源</p>
+					}}>富文本编辑器，免费、开源</h4>
+					<p>测试</p>
 				</div>
 			</div>
 		);
