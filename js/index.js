@@ -110,6 +110,7 @@ class Index extends React.Component {
 		this.setOneMenuStatus = this.setOneMenuStatus.bind(this);
 		this.setDropMenuStatus = this.setDropMenuStatus.bind(this);
 		this.setFullScreenState = this.setFullScreenState.bind(this);
+		this.compareNodesOrder = this.compareNodesOrder.bind(this);
 	}
 	componentDidMount() {
 		let anchorNode = null;
@@ -244,7 +245,6 @@ class Index extends React.Component {
 	}
 	// 设置单个菜单状态
 	setOneMenuStatus(status) {
-		this.createRange();
 		this.setState(
 			{
 				dropMenuStatus: this.state.dropMenuStatus,
@@ -317,14 +317,39 @@ class Index extends React.Component {
 		let selection = document.getSelection();
 
 		if (!anchorNode) return;
+		if( anchorNode === focusNode )return;
 		try {
-			range.setStart(anchorNode, anchorOffset);
-			range.setEnd(focusNode, focusOffset);
+			// 判断 anchorNode是否在focusNode之前
+			let res = this.compareNodesOrder(anchorNode, focusNode);
+
+			if( res ){
+				range.setStart(anchorNode, anchorOffset);
+				range.setEnd(focusNode, focusOffset);
+			}else{
+				range.setStart(focusNode, focusOffset);
+				range.setEnd(anchorNode, anchorOffset);
+			}			
 			selection.removeAllRanges();
 			selection.addRange(range);
 		} catch (err) {
 			// 不报错
 		}
+	}
+	// 判断两个节点先后顺序，true:nodeA在nodeB前，false:nodeA不在nodeB前
+	compareNodesOrder(nodeA, nodeB){
+		const getRootParent = node => {
+			if(node.parentNode === this.content)return node;
+			return getRootParent(node.parentNode);
+		}
+		const xBeforey = (nodeX, nodeY) => {
+			if(nodeX.nextElementSibling === null) return false;
+			if(nodeX.nextElementSibling === nodeY)return true;
+			return xBeforey(nodeX.nextElementSibling);
+		}
+		const parentA = getRootParent(nodeA);
+		const parentB = getRootParent(nodeB);
+
+		return xBeforey(parentA, parentB);
 	}
 	hasFocus() {
 		return document.activeElement === this.content;
@@ -556,7 +581,6 @@ class Index extends React.Component {
 					<h4 style={{
 						textAlign: 'center'
 					}}>富文本编辑器，免费、开源</h4>
-					<p>测试</p>
 				</div>
 			</div>
 		);
