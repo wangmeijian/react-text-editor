@@ -104,6 +104,7 @@ class Index extends React.Component {
 		];
 		this.selection = {};
 
+		this.insert = this.insert.bind(this);
 		this.hasFocus = this.hasFocus.bind(this);
 		this.setHeader = this.setHeader.bind(this);
 		this.setMenuStatus = this.setMenuStatus.bind(this);
@@ -128,7 +129,7 @@ class Index extends React.Component {
 			focusOffset: anchorNode.length,
 			text: ''
 		};
-		this.createRange();
+		this.createRange(true);
 	}
 	setFullScreenState(target, type) {
 		this.setMenuStatus({
@@ -198,8 +199,8 @@ class Index extends React.Component {
 				);
 			});
 	}
-	handleToolClick(id) {
-		this.handleSetContent(id);
+	handleToolClick(...args) {
+		this.handleSetContent(...args);
 	}
 	cmd(...args) {
 		document.execCommand(...args);
@@ -232,9 +233,11 @@ class Index extends React.Component {
 				break;
 			case 'link':
 				this.createRange();
-				console.log(this.selection);
-				console.log(type);
 				this.cmd('createLink', false, params);
+				break;
+			case 'image':
+				this.createRange();
+				this.cmd('insertImage', false, params);
 				break;
 			case 'fullscreen':
 				menuStatus['fullscreen']
@@ -245,6 +248,7 @@ class Index extends React.Component {
 	}
 	// 设置单个菜单状态
 	setOneMenuStatus(status) {
+		this.createRange();
 		this.setState(
 			{
 				dropMenuStatus: this.state.dropMenuStatus,
@@ -306,7 +310,7 @@ class Index extends React.Component {
 			document.webkitExitFullscreen();
 		}
 	}
-	createRange() {
+	createRange(initFocus) {
 		let {
 			anchorNode,
 			anchorOffset,
@@ -317,12 +321,11 @@ class Index extends React.Component {
 		let selection = document.getSelection();
 
 		if (!anchorNode) return;
-		if( anchorNode === focusNode )return;
 		try {
 			// 判断 anchorNode是否在focusNode之前
 			let res = this.compareNodesOrder(anchorNode, focusNode);
 
-			if( res ){
+			if( res || (anchorNode === focusNode && anchorOffset < focusOffset) ){
 				range.setStart(anchorNode, anchorOffset);
 				range.setEnd(focusNode, focusOffset);
 			}else{
@@ -370,6 +373,7 @@ class Index extends React.Component {
 	}
 	getCurrentStyle() {
 		if (!this.hasFocus()) return [];
+		let node = this.selection.anchorNode;
 		const result = [];
 		const status = {
 			'font-weight': 'bold',
@@ -377,9 +381,13 @@ class Index extends React.Component {
 			'font-style': 'italic',
 			'color': 'font-colors',
 			'font-size': 'font-size',
-			'text-align': ''
+			'text-align': '',
+			'text-indent': 'indent'
 		};
-		const node = this.selection.anchorNode.parentNode;
+		// 文本节点
+		if(node.nodeType === 3){
+			node = node.parentNode;
+		}
 		const computed = (node, names) => {
 			if (node === this.content) return names;
 			const styles = node.getAttribute('style');
@@ -411,7 +419,15 @@ class Index extends React.Component {
 		};
 		return computed(node, result);
 	}
-
+	insert(type, url, resetState){
+		this.handleToolClick(type, url);
+		this.setDropMenuStatus({
+			[type]: false
+		})
+		this.setState({
+			[resetState]: ''
+		})
+	}
 	render() {
 		const { menuStatus, dropMenuStatus, linkUrl, imageUrl } = this.state;
 
@@ -513,10 +529,7 @@ class Index extends React.Component {
 							</div>
 							<div className="d-e-link-item">
 								<button onClick={() => {
-									this.handleToolClick('link', linkUrl);
-									this.setDropMenuStatus({
-										link: false
-									})
+									this.insert('link', linkUrl, 'linkUrl');
 								}} className="d-e-link-save" tabIndex="0">保存</button>
 								<button onClick={() => {
 									this.setDropMenuStatus({
@@ -526,15 +539,34 @@ class Index extends React.Component {
 							</div>
 						</div>
 					</DropMenu>
-					<div className="d-e-menu">
-						<button
-							id="de-image"
-							className="d-e-button icon-image"
-							onClick={() => {
-								this.handleToolClick('image');
-							}}
-						/>
-					</div>
+					<DropMenu
+						classNames="d-e-link"
+						type="image"
+						icon="icon-image"
+						active={dropMenuStatus['image']}
+						setMenuStatus={this.setDropMenuStatus}
+					>
+						<div className="d-e-submenu d-e-link-panel">
+							<div className="d-e-link-item">
+								<span className="d-e-link-desc">图片地址：</span>
+								<input type="text" tabIndex="0" value={imageUrl} onChange={e => {
+									this.setState({
+										imageUrl: e.target.value
+									})
+								}} className="d-e-link-input" />
+							</div>
+							<div className="d-e-link-item">
+								<button onClick={() => {
+									this.insert('image', imageUrl, 'imageUrl');
+								}} className="d-e-link-save" tabIndex="0">保存</button>
+								<button onClick={() => {
+									this.setDropMenuStatus({
+										image: false
+									})
+								}} className="d-e-link-cancel" tabIndex="0">取消</button>
+							</div>
+						</div>
+					</DropMenu>
 					<Menu
 						setMenuStatus={this.setOneMenuStatus}
 						type="undo"
@@ -575,12 +607,7 @@ class Index extends React.Component {
 						this.setMenuStatus();
 					}}
 				>
-					<h1 style={{
-						textAlign: 'center'
-					}}>editor-react</h1>
-					<h4 style={{
-						textAlign: 'center'
-					}}>富文本编辑器，免费、开源</h4>
+					{this.props.children}
 				</div>
 			</div>
 		);

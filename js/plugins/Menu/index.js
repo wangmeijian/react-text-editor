@@ -7,6 +7,8 @@ class Menu extends React.Component {
 	constructor(props) {
 		super(props);
 		this.cmd('styleWithCSS');
+		this.indent = this.indent.bind(this);
+		this.getRootParent = this.getRootParent.bind(this);
 	}
 	handleSetContent(type, params) {
 		const { active, setMenuStatus } = this.props;
@@ -34,7 +36,7 @@ class Menu extends React.Component {
 				this.cmd('createLink', false, params);
 				break;
 			case 'indent':
-				!active ? this.cmd('indent') : this.cmd('outdent');
+				this.indent(!active);
 				break;
 			case 'align-left':
 				this.cmd('justifyLeft');
@@ -52,6 +54,15 @@ class Menu extends React.Component {
 				this.cmd('redo');
 				break;
 		}
+	}
+	indent(active){
+		let selection = document.getSelection();
+		let rootParent = this.getRootParent(selection.anchorNode);
+		rootParent.style.textIndent = active ? '2em' : '';
+	}
+	getRootParent(node){
+		if(node.parentNode.getAttribute('contenteditable') === "true")return node;
+		return this.getRootParent(node.parentNode);
 	}
 	cmd(...args) {
 		document.execCommand(...args);
