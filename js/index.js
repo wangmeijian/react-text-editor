@@ -265,7 +265,9 @@ class Index extends React.Component {
 	}
 	setMenuStatus(status) {
 		let styles = [];
-		const menuStatus = {};
+		const menuStatus = {
+			fullscreen: this.state.menuStatus.fullscreen
+		};
 		const currentStatus = {};
 		// reset
 		for (let menu in this.state.menuStatus) {

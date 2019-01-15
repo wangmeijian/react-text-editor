@@ -4,8 +4,6 @@
 ![editor-react实例](https://github.com/wangmeijian/editor-react/blob/master/example/images/editor-react.png)
 
 ## Todo list
-* 语音输入
-* 中文字符缩进
 * 本地自动保存
 * 插入表格
 * 插入图表

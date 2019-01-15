@@ -4,7 +4,7 @@
   "description": "富文本编辑器",
   "main": "index.js",
   "scripts": {
-    "dev": "webpack --config webpack.dev.js --mode development"
+    "dev": "webpack --config webpack.dev.js --mode development --progress"
   },
   "repository": {
     "type": "git",
