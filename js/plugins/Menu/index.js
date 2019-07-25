@@ -26,15 +26,6 @@ class Menu extends React.Component {
 			case 'italic':
 				this.cmd('italic');
 				break;
-			case 'font-colors':
-				this.cmd('foreColor', false, params);
-				break;
-			case 'font-size':
-				this.cmd('fontSize', false, params);
-				break;
-			case 'link':
-				this.cmd('createLink', false, params);
-				break;
 			case 'indent':
 				this.indent(!active);
 				break;

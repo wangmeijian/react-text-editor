@@ -129,13 +129,23 @@ class Index extends React.Component {
 			focusOffset: anchorNode.length,
 			text: ''
 		};
-		this.createRange(true);
+		this.createRange();
+		this.setMenuStatus();
 	}
-	setFullScreenState(target, type) {
+	/**
+	 * 更新全屏状态
+	 * @method setFullScreenState
+	 */
+	setFullScreenState() {
 		this.setMenuStatus({
 			fullscreen: document.fullscreenElement === this.container
 		});
 	}
+	/**
+	 * 渲染头部操作面板
+	 * @method renderHeadingPicker
+	 * @return {Object}   头部虚拟DOM
+	 */
 	renderHeadingPicker(){
 		return this.heading.map(head => {
 			return (
@@ -146,7 +156,7 @@ class Index extends React.Component {
 						this.setDropMenuStatus({
 							heading: false
 						});
-						this.handleSetContent('heading', head.tag);
+						this.handleToolClick('heading', head.tag);
 					}}
 				>
 					{head.node}
@@ -154,6 +164,11 @@ class Index extends React.Component {
 			);
 		});
 	}
+	/**
+	 * 渲染字体颜色选择面板
+	 * @method renderFontColorPicker
+	 * @return {Object}   字体面板DOM
+	 */
 	renderFontColorPicker() {
 		return this.fontColors.map(color => {
 			return (
@@ -169,12 +184,17 @@ class Index extends React.Component {
 							'font-colors': false
 						})
 						this.createRange();
-						this.handleSetContent('font-colors', color);
+						this.handleToolClick('font-colors', color);
 					}}
 				/>
 			);
 		});
 	}
+	/**
+	 * 渲染字体大小选择面板
+	 * @method renderFontSizePicker
+	 * @return {Object}   字体大小DOM
+	 */
 	renderFontSizePicker() {
 		return Object.keys(this.fontSize)
 			.sort()
@@ -191,16 +211,13 @@ class Index extends React.Component {
 							this.setDropMenuStatus({
 								'font-size': false
 							})
-							this.handleSetContent('font-size', size);
+							this.handleToolClick('font-size', size);
 						}}
 					>
 						{this.fontSize[size]}
 					</li>
 				);
 			});
-	}
-	handleToolClick(...args) {
-		this.handleSetContent(...args);
 	}
 	cmd(...args) {
 		document.execCommand(...args);
@@ -215,7 +232,12 @@ class Index extends React.Component {
 			this.cmd('formatBlock', false, tag);
 		}
 	}
-	handleSetContent(type, params) {
+	/**
+	 * 工具栏点击事件
+	 * @method handleToolClick
+	 * @param  {String}    操作类型，bold、indent等
+	 */
+	handleToolClick(type, params) {
 		const { menuStatus, dropMenuStatus } = this.state;
 		switch (type) {
 			case 'heading':
@@ -246,12 +268,15 @@ class Index extends React.Component {
 				break;
 		}
 	}
-	// 设置单个菜单状态
+	/**
+	 * 设置单个菜单状态
+	 * @method setOneMenuStatus
+	 * @param  {[type]}         status [description]
+	 */
 	setOneMenuStatus(status) {
 		this.createRange();
 		this.setState(
 			{
-				dropMenuStatus: this.state.dropMenuStatus,
 				menuStatus: {
 					...this.state.menuStatus,
 					...status
@@ -263,6 +288,10 @@ class Index extends React.Component {
 			}
 		);
 	}
+	/**
+	 * 根据当前样式设置所有菜单状态
+	 * @method setMenuStatus
+	 */
 	setMenuStatus(status) {
 		let styles = [];
 		const menuStatus = {
@@ -280,7 +309,6 @@ class Index extends React.Component {
 			currentStatus[item] = true;
 		});
 		this.setState({
-			dropMenuStatus: this.state.dropMenuStatus,
 			menuStatus: {
 				...menuStatus,
 				...currentStatus,
@@ -288,9 +316,12 @@ class Index extends React.Component {
 			}
 		});
 	}
+	/**
+	 * 设置有下拉操作面板的菜单状态，如字体颜色操作
+	 * @method setMenuStatus
+	 */
 	setDropMenuStatus(status){
 		this.setState({
-			menuStatus: this.state.menuStatus,
 			dropMenuStatus: {
 				...this.state.dropMenuStatus,
 				...status
@@ -312,7 +343,11 @@ class Index extends React.Component {
 			document.webkitExitFullscreen();
 		}
 	}
-	createRange(initFocus) {
+	/**
+	 * 创建选区
+	 * @method createRange
+	 */
+	createRange() {
 		let {
 			anchorNode,
 			anchorOffset,
@@ -340,7 +375,10 @@ class Index extends React.Component {
 			// 不报错
 		}
 	}
-	// 判断两个节点先后顺序，true:nodeA在nodeB前，false:nodeA不在nodeB前
+	/**
+	 * 判断两个节点先后顺序，true:nodeA在nodeB前，false:nodeA不在nodeB前
+	 * @method compareNodesOrder
+	 */
 	compareNodesOrder(nodeA, nodeB){
 		const getRootParent = node => {
 			if(node.parentNode === this.content)return node;
@@ -421,6 +459,13 @@ class Index extends React.Component {
 		};
 		return computed(node, result);
 	}
+	/**
+	 * 插入链接、图片
+	 * @method insert
+	 * @param  {String} type       插入类型：link/image
+	 * @param  {String} url        url地址
+	 * @param  {String} resetState 插入之后清空输入框数据
+	 */
 	insert(type, url, resetState){
 		this.handleToolClick(type, url);
 		this.setDropMenuStatus({
