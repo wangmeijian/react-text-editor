@@ -6,18 +6,18 @@
 @buttonHoverBgColor: #e7e7e7;
 @buttonActiveBgColor: #d7d6d6;
 
-.d-e-container{
+.r-t-container{
 	position: relative;
 	box-sizing: border-box;
-	min-width: 500px;
+	min-width: 550px;
 	border: 1px solid @borderColor;
 	color: @fontColor;
 	background-color: white;
-	.d-e-toolbar{
+	.r-t-toolbar{
 		border-bottom: 1px solid @borderColor;
 		min-height: 26px;
 		padding: 5px;
-		.d-e-button{
+		.r-t-button{
 			width: 26px;
 			height: 100%;
 			display: inline-block;
@@ -33,40 +33,40 @@
 			&:hover{
 				background-color: @buttonHoverBgColor;
 			}
-			&.d-e-button-active{
+			&.r-t-button-active{
 				background-color: @buttonActiveBgColor;
 			}
 		}
-		.d-e-menu{
+		.r-t-menu{
 			position: relative;
 			float: left;
 			cursor: pointer;
 			width: 26px;
 			height: 26px;
 			margin: 0 4px;
-			&.d-e-fullscreen{
+			&.r-t-fullscreen{
 				float: right;
 			}
-			&.d-e-font-color{
-				.d-e-color,.d-e-button{
+			&.r-t-font-color{
+				.r-t-color,.r-t-button{
 					vertical-align: middle;
 				}
 			}
-			&.d-e-font-size:hover{
+			&.r-t-font-size:hover{
 				background-color: @buttonHoverBgColor;
 			}
 			&:hover{
-				.d-e-button{
+				.r-t-button{
 					background-color: @buttonHoverBgColor;
 				}
-				.d-e-submenu{
+				.r-t-submenu{
 					display: block;
 				}
 			};
-			.d-e-button-active:hover{
+			.r-t-button-active:hover{
 				background-color: @buttonActiveBgColor;
 			}
-			.d-e-submenu{
+			.r-t-submenu{
 				position: absolute;
 				left: 0;
 				top: 31px;
@@ -75,7 +75,7 @@
 			}
 		}	
 	}
-	.d-e-content{
+	.r-t-content{
 		padding: 10px;
 		min-height: 500px;
 		max-height: calc(100% - 58px);
@@ -86,7 +86,7 @@
 			margin: 4px 0;
 		}
 	}
-	.d-e-font-size-panel{
+	.r-t-font-size-panel{
 		.f-z-ul{
 			margin: 0;
 			padding: 0;
@@ -100,10 +100,10 @@
 			}
 		}
 	}
-	.d-e-color-panel{
+	.r-t-color-panel{
 		width: 140px;
 		padding: 2px;
-		.d-e-color-options{
+		.r-t-color-options{
 			width: 16px;
 			height: 16px;
 			float: left;
@@ -114,9 +114,9 @@
 			};
 		}
 	}	
-	.d-e-heading-panel{
+	.r-t-heading-panel{
 		position: absolute;
-		.d-e-heading-list{
+		.r-t-heading-list{
 			padding: 0;
 			margin: 0;
 			li{
@@ -133,7 +133,7 @@
 			}
 		}
 	}
-	.d-e-link-panel{
+	.r-t-link-panel{
 		width: 350px;
 		padding: 20px;
 		box-sizing: border-box;
@@ -142,7 +142,7 @@
 		cursor: auto;
 		box-shadow: rgba(0,0,0,0.1) 0 2px 8px;
 		background-color: white;
-		.d-e-link-item{
+		.r-t-link-item{
 			position: relative;
 			padding: 0 4px;
 			font-size: 12px;
@@ -151,18 +151,18 @@
 			&:last-child{
 				text-align: right;
 			}
-			.d-e-link-input,.d-e-link-desc{
+			.r-t-link-input,.r-t-link-desc{
 				display: inline-block;
 				vertical-align: middle;
 			}
-			.d-e-link-desc{
+			.r-t-link-desc{
 				width: 64px;
 			}
-			.d-e-link-input{
+			.r-t-link-input{
 				height: 20px;
 				width: 230px;
 			}
-			.d-e-link-save,.d-e-link-cancel{
+			.r-t-link-save,.r-t-link-cancel{
 				width: 60px;
 				height: 26px;
 				border: 1px solid @borderColor;

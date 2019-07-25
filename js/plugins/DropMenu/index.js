@@ -11,14 +11,14 @@ class DropMenu extends React.Component{
 
 		return (
 			<div 
-				className={classnames("d-e-menu", {
+				className={classnames("r-t-menu", {
 					[classNames]: true
 				})}>
 				<button
 					tabIndex="0"
-					className={classnames("d-e-button", {
+					className={classnames("r-t-button", {
 						[icon]: true,
-						'd-e-button-active': active
+						'r-t-button-active': active
 					})}
 					onClick={() => {
 						console.log(type, !active);

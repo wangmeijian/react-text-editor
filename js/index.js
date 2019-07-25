@@ -115,8 +115,8 @@ class Index extends React.Component {
 	}
 	componentDidMount() {
 		let anchorNode = null;
-		this.container = document.querySelector('.d-e-container');
-		this.content = document.querySelector('.d-e-container .d-e-content');
+		this.container = document.querySelector('.r-t-container');
+		this.content = document.querySelector('.r-t-container .r-t-content');
 		document.addEventListener(
 			'webkitfullscreenchange',
 			this.setFullScreenState
@@ -173,7 +173,7 @@ class Index extends React.Component {
 		return this.fontColors.map(color => {
 			return (
 				<span
-					className="d-e-color-options"
+					className="r-t-color-options"
 					key={color}
 					tabIndex="0"
 					style={{
@@ -479,17 +479,17 @@ class Index extends React.Component {
 		const { menuStatus, dropMenuStatus, linkUrl, imageUrl } = this.state;
 
 		return (
-			<div className="d-e-container">
-				<div className="d-e-toolbar">					
+			<div className="r-t-container">
+				<div className="r-t-toolbar">					
 					<DropMenu
-						classNames="d-e-heading"
+						classNames="r-t-heading"
 						type="heading"
 						icon="icon-header"
 						active={dropMenuStatus['heading']}
 						setMenuStatus={this.setDropMenuStatus}
 					>
-						<div className="d-e-submenu d-e-heading-panel">
-							<ul className="d-e-heading-list">{this.renderHeadingPicker()}</ul>
+						<div className="r-t-submenu r-t-heading-panel">
+							<ul className="r-t-heading-list">{this.renderHeadingPicker()}</ul>
 						</div>
 					</DropMenu>
 					<Menu
@@ -511,24 +511,24 @@ class Index extends React.Component {
 						active={menuStatus.italic}
 					/>
 					<DropMenu
-						classNames="d-e-font-color"
+						classNames="r-t-font-color"
 						type="font-colors"
 						icon="icon-font-colors"
 						active={dropMenuStatus['font-colors']}
 						setMenuStatus={this.setDropMenuStatus}
 					>
-						<div className="d-e-submenu d-e-color-panel">
+						<div className="r-t-submenu r-t-color-panel">
 							{this.renderFontColorPicker()}
 						</div>
 					</DropMenu>
 					<DropMenu
-						classNames="d-e-font-size"
+						classNames="r-t-font-size"
 						type="font-size"
 						icon="icon-font-size"
 						active={dropMenuStatus['font-size']}
 						setMenuStatus={this.setDropMenuStatus}
 					>
-						<div className="d-e-submenu d-e-font-size-panel" >
+						<div className="r-t-submenu r-t-font-size-panel" >
 							<ul className="f-z-ul">
 								{this.renderFontSizePicker()}
 							</ul>
@@ -559,58 +559,58 @@ class Index extends React.Component {
 						active={menuStatus['align-right']}
 					/>
 					<DropMenu
-						classNames="d-e-link"
+						classNames="r-t-link"
 						type="link"
 						icon="icon-link"
 						active={dropMenuStatus['link']}
 						setMenuStatus={this.setDropMenuStatus}
 					>
-						<div className="d-e-submenu d-e-link-panel">
-							<div className="d-e-link-item">
-								<span className="d-e-link-desc">链接地址：</span>
+						<div className="r-t-submenu r-t-link-panel">
+							<div className="r-t-link-item">
+								<span className="r-t-link-desc">链接地址：</span>
 								<input type="text" tabIndex="0" value={linkUrl} onChange={e => {
 									this.setState({
 										linkUrl: e.target.value
 									})
-								}} className="d-e-link-input" />
+								}} className="r-t-link-input" />
 							</div>
-							<div className="d-e-link-item">
+							<div className="r-t-link-item">
 								<button onClick={() => {
 									this.insert('link', linkUrl, 'linkUrl');
-								}} className="d-e-link-save" tabIndex="0">保存</button>
+								}} className="r-t-link-save" tabIndex="0">保存</button>
 								<button onClick={() => {
 									this.setDropMenuStatus({
 										link: false
 									})
-								}} className="d-e-link-cancel" tabIndex="0">取消</button>
+								}} className="r-t-link-cancel" tabIndex="0">取消</button>
 							</div>
 						</div>
 					</DropMenu>
 					<DropMenu
-						classNames="d-e-link"
+						classNames="r-t-link"
 						type="image"
 						icon="icon-image"
 						active={dropMenuStatus['image']}
 						setMenuStatus={this.setDropMenuStatus}
 					>
-						<div className="d-e-submenu d-e-link-panel">
-							<div className="d-e-link-item">
-								<span className="d-e-link-desc">图片地址：</span>
+						<div className="r-t-submenu r-t-link-panel">
+							<div className="r-t-link-item">
+								<span className="r-t-link-desc">图片地址：</span>
 								<input type="text" tabIndex="0" value={imageUrl} onChange={e => {
 									this.setState({
 										imageUrl: e.target.value
 									})
-								}} className="d-e-link-input" />
+								}} className="r-t-link-input" />
 							</div>
-							<div className="d-e-link-item">
+							<div className="r-t-link-item">
 								<button onClick={() => {
 									this.insert('image', imageUrl, 'imageUrl');
-								}} className="d-e-link-save" tabIndex="0">保存</button>
+								}} className="r-t-link-save" tabIndex="0">保存</button>
 								<button onClick={() => {
 									this.setDropMenuStatus({
 										image: false
 									})
-								}} className="d-e-link-cancel" tabIndex="0">取消</button>
+								}} className="r-t-link-cancel" tabIndex="0">取消</button>
 							</div>
 						</div>
 					</DropMenu>
@@ -624,13 +624,13 @@ class Index extends React.Component {
 						type="redo"
 						icon="icon-redo"
 					/>
-					<div className="d-e-menu d-e-fullscreen">
+					<div className="r-t-menu r-t-fullscreen">
 						<button
 							id="de-fullscreen"
 							className={classnames(
-								'd-e-button icon-fullscreen',
+								'r-t-button icon-fullscreen',
 								{
-									'd-e-button-active': menuStatus.fullscreen
+									'r-t-button-active': menuStatus.fullscreen
 								}
 							)}
 							onClick={() => {
@@ -640,7 +640,7 @@ class Index extends React.Component {
 					</div>
 				</div>
 				<div
-					className="d-e-content"
+					className="r-t-content"
 					autoFocus="autofocus"
 					contentEditable="true"
 					spellCheck="false"

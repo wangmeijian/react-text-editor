@@ -62,11 +62,11 @@ class Menu extends React.Component {
 		const { type, icon, active } = this.props;
 
 		return (
-			<div className='d-e-menu'>
+			<div className='r-t-menu'>
 				<button
-					className={classnames('d-e-button', {
+					className={classnames('r-t-button', {
 						[icon]: true,
-						'd-e-button-active': active
+						'r-t-button-active': active
 					})}
 					onClick={() => {
 						this.handleSetContent(type);
