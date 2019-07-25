@@ -6,7 +6,7 @@ ReactDOM.render(
 	<Editor>
 		<h1 style={{
 			textAlign: 'center'
-		}}>editor-react</h1>
+		}}>react-text-editor</h1>
 		<h4 style={{
 			textAlign: 'center'
 		}}>一款基于React的富文本编辑器，免费、开源</h4>
