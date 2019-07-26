@@ -10,6 +10,7 @@
 	position: relative;
 	box-sizing: border-box;
 	min-width: 550px;
+	height: 100%;
 	border: 1px solid @borderColor;
 	color: @fontColor;
 	background-color: white;
@@ -77,10 +78,9 @@
 	}
 	.r-t-content{
 		padding: 10px;
-		min-height: 500px;
-		max-height: calc(100% - 58px);
 		outline: none;
 		font-size: 14px;
+		height: calc(100% - 58px);
 		overflow-y: auto;
 		p{
 			margin: 4px 0;

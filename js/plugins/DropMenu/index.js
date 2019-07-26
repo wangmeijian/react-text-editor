@@ -21,7 +21,6 @@ class DropMenu extends React.Component{
 						'r-t-button-active': active
 					})}
 					onClick={() => {
-						console.log(type, !active);
 						setMenuStatus({
 							[type]: !active
 						})

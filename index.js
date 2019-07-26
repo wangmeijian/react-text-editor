@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import Editor from '@js';
 
 ReactDOM.render(
-	<Editor>
+	<Editor width="100%" height="560px">
 		<h1 style={{
 			textAlign: 'center'
 		}}>react-text-editor</h1>
@@ -18,3 +18,4 @@ ReactDOM.render(
 	</Editor>, 
 	document.querySelector('#example')
 );
+
