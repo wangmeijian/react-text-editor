@@ -9,12 +9,7 @@ ReactDOM.render(
 		}}>react-text-editor</h1>
 		<h4 style={{
 			textAlign: 'center'
-		}}>一款基于React的富文本编辑器，免费、开源</h4>
-		<p style={{
-			textAlign: 'center'
-		}}>
-			<img src="../example/images/cat.jpg" />
-		</p>
+		}}>一款基于React的富文本编辑器</h4>
 	</Editor>, 
 	document.querySelector('#example')
 );
