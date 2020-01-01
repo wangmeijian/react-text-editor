@@ -2,7 +2,7 @@
 基于React的富文本编辑器
 
 <div align=center>
-<img src="https://raw.githubusercontent.com/wangmeijian/images/master/react-text-editor/react-text-editor.jpg" width="600px">
+<img src="https://raw.githubusercontent.com/wangmeijian/images/master/react-text-editor/react-text-editor.jpg" width="800px">
 </div>
 
 ## Usage
