@@ -12,10 +12,10 @@ const devConfig = merge(baseConfig, {
 	devServer: {
 	  contentBase: path.join(__dirname, "build"),
 	  inline: true,
-	  port: 9000
+	  port: 8000
 	},
 	plugins: [
-    	new Webpack.HotModuleReplacementPlugin(),
+    new Webpack.HotModuleReplacementPlugin(),
 		new HtmlWebpackPlugin({
 			template: path.resolve(__dirname,'./public/index.html')
 		})
